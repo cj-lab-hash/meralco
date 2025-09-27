@@ -9,7 +9,8 @@ c = conn.cursor()
 c.execute("""
 CREATE TABLE IF NOT EXISTS billing (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    ate_gen TEXT,
+    ate_gen_previous Real,
+    ate_gen_current Real
     actual_bill REAL,
     previous_reading REAL,
     current_reading REAL,
@@ -26,13 +27,14 @@ conn.close()
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        ate_gen = request.form['ate_gen']
         actual_bill = float(request.form['actual_bill'])
         previous_reading = float(request.form['previous_reading'])
         current_reading = float(request.form['current_reading'])
+        ate_gen_previous = float(request.form['ate_gen_previous'])
+        ate_gen = request.form['ate_gen_current']
         consumption = current_reading - previous_reading
         rate_per_kwh = actual_bill / consumption if consumption != 0 else 0
-        ate_gen_consumption = current_reading - previous_reading
+        ate_gen_consumption = ate_gen - ate_gen_previous
         ate_gen_bill = ate_gen_consumption * rate_per_kwh
         jm_bill = (consumption - ate_gen_consumption) * rate_per_kwh
 
@@ -40,11 +42,11 @@ def index():
         c = conn.cursor()
         c.execute("""
         INSERT INTO billing (
-            ate_gen, actual_bill, previous_reading, current_reading,
+            ate_gen, actual_bill, previous_reading, current_reading,ate_gen_previous,
             consumption, rate_per_kwh, ate_gen_consumption, ate_gen_bill, jm_bill
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """, (
-            ate_gen, actual_bill, previous_reading, current_reading,
+            ate_gen, actual_bill, previous_reading, current_reading,ate_gen_previous,
             consumption, rate_per_kwh, ate_gen_consumption, ate_gen_bill, jm_bill
         ))
         conn.commit()

@@ -10,10 +10,6 @@
     <h2>Billing Entry</h2>
     <form method="POST" action="/">
         <div class="mb-3">
-            <label>Ate Gen</label>
-            <input type="text" name="ate_gen" class="form-control" required>
-        </div>
-        <div class="mb-3">
             <label>Actual Bill (₱)</label>
             <input type="number" step="0.01" name="actual_bill" class="form-control" required>
         </div>
@@ -25,6 +21,18 @@
             <label>Current Reading</label>
             <input type="number" step="0.01" name="current_reading" class="form-control" required>
         </div>
+        <div class="mb-3">
+            <label>Rate per KWH</label>
+            <input type="number" step="0.01" name="rate_per_kwh" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Ate Gen Current Reading</label>
+            <input type="text" name="ate_gen" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label>Ate Gen Previous Reading</label>
+            <input type="text" name="ate_gen" class="form-control" required>
+        </div>
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 
@@ -33,12 +41,14 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Ate Gen</th>
+                
                 <th>Actual Bill</th>
                 <th>Previous Reading</th>
                 <th>Current Reading</th>
                 <th>Consumption</th>
                 <th>Rate/kWh</th>
+                <th>Ate Gen Previous Reading</th>
+                <th>Ate Gen Current Reading</th>
                 <th>Ate Gen Consumption</th>
                 <th>Ate Gen Bill</th>
                 <th>JM Bill</th>
@@ -56,10 +66,46 @@
                 <td>{{ record[7] }}</td>
                 <td>{{ record[8] }}</td>
                 <td>{{ record[9] }}</td>
+                <td>{{ record[10] }}</td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
 </div>
 </body>
+<button type="button" onclick="copyAteGenPreviousReading()">Copy Previous Reading</button>
+
+<script>
+function copyAteGenPreviousReading() {
+    const table = document.querySelector("table");
+    if (!table) return;
+
+    const rows = table.querySelectorAll("tr");
+    if (rows.length < 2) return;
+
+    const lastRow = rows[rows.length - 1];
+    const cells = lastRow.querySelectorAll("td");
+
+    // Assuming 'Ate Gen Current Reading' is at index 6
+    const ateGenCurrentReading = cells[6]?.innerText;
+    if (ateGenCurrentReading) {
+        document.querySelector("input[name='ate_gen_previous']").value = ateGenCurrentReading;
+    }
+}
+</script>
+
+
+    const rows = table.querySelectorAll("tr");
+    if (rows.length < 2) return;
+
+    const lastRow = rows[rows.length - 1];
+    const cells = lastRow.querySelectorAll("td");
+
+    // Assuming 'Ate Gen Current Reading' is at index 6
+    const ateGenCurrentReading = cells[6]?.innerText;
+    if (ateGenCurrentReading) {
+        document.querySelector("input[name='ate_gen_previous']").value = ateGenCurrentReading;
+    }
+}
+</script>
 </html>
