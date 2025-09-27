@@ -3,6 +3,24 @@
 <html>
 <head>
     <title>Billing System</title>
+    <script>
+        function copyAteGenPreviousReading() {
+            const table = document.querySelector("table");
+            if (!table) return;
+
+            const rows = table.querySelectorAll("tr");
+            if (rows.length < 2) return;
+
+            const lastRow = rows[rows.length - 1];
+            const cells = lastRow.querySelectorAll("td");
+
+            // Assuming 'Ate Gen Current Reading' is at index 7
+            const ateGenCurrentReading = cells[7]?.innerText;
+            if (ateGenCurrentReading) {
+                document.querySelector("input[name='ate_gen_previous']").value = ateGenCurrentReading;
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Billing Form</h1>
@@ -38,43 +56,26 @@
             <th>Ate Gen Previous</th>
             <th>Ate Gen Current</th>
             <th>Ate Gen Consumption</th>
+            <th>JM Consumption</th>
             <th>Ate Gen Share</th>
             <th>JM Share</th>
         </tr>
         {% for record in records %}
         <tr>
-            <td>{{ record['id'] }}</td>
-            <td>{{ record['actual_bill'] }}</td>
-            <td>{{ record['previous_reading'] }}</td>
-            <td>{{ record['current_reading'] }}</td>
-            <td>{{ record['consumption'] }}</td>
-            <td>{{ record['rate_per_kwh'] }}</td>
-            <td>{{ record['ate_gen_previous'] }}</td>
-            <td>{{ record['ate_gen_current'] }}</td>
-            <td>{{ record['ate_gen_consumption'] }}</td>
-            <td>{{ record['ate_gen_share'] }}</td>
-            <td>{{ record['jm_share'] }}</td>
+            <td>{{ record[0] }}</td>
+            <td>{{ record[1] }}</td>
+            <td>{{ record[2] }}</td>
+            <td>{{ record[3] }}</td>
+            <td>{{ record[4] }}</td>
+            <td>{{ record[5] }}</td>
+            <td>{{ record[6] }}</td>
+            <td>{{ record[7] }}</td>
+            <td>{{ record[8] }}</td>
+            <td>{{ record[9] }}</td>
+            <td>{{ record[10] }}</td>
+            <td>{{ record[11] }}</td>
         </tr>
         {% endfor %}
     </table>
-
-    <script>
-    function copyAteGenPreviousReading() {
-        const table = document.querySelector("table");
-        if (!table) return;
-
-        const rows = table.querySelectorAll("tr");
-        if (rows.length < 2) return;
-
-        const lastRow = rows[rows.length - 1];
-        const cells = lastRow.querySelectorAll("td");
-
-        // Assuming 'Ate Gen Current Reading' is at index 7
-        const ateGenCurrentReading = cells[7]?.innerText;
-        if (ateGenCurrentReading) {
-            document.querySelector("input[name='ate_gen_previous']").value = ateGenCurrentReading;
-        }
-    }
-    </script>
 </body>
 </html>
