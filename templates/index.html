@@ -41,7 +41,6 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                
                 <th>Actual Bill</th>
                 <th>Previous Reading</th>
                 <th>Current Reading</th>
@@ -79,21 +78,6 @@
 function copyAteGenPreviousReading() {
     const table = document.querySelector("table");
     if (!table) return;
-
-    const rows = table.querySelectorAll("tr");
-    if (rows.length < 2) return;
-
-    const lastRow = rows[rows.length - 1];
-    const cells = lastRow.querySelectorAll("td");
-
-    // Assuming 'Ate Gen Current Reading' is at index 6
-    const ateGenCurrentReading = cells[6]?.innerText;
-    if (ateGenCurrentReading) {
-        document.querySelector("input[name='ate_gen_previous']").value = ateGenCurrentReading;
-    }
-}
-</script>
-
 
     const rows = table.querySelectorAll("tr");
     if (rows.length < 2) return;
