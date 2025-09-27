@@ -3,93 +3,78 @@
 <html>
 <head>
     <title>Billing System</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 <body>
-<div class="container mt-5">
-    <h2>Billing Entry</h2>
-    <form method="POST" action="/">
-        <div class="mb-3">
-            <label>Actual Bill (₱)</label>
-            <input type="number" step="0.01" name="actual_bill" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Previous Reading</label>
-            <input type="number" step="0.01" name="previous_reading" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Current Reading</label>
-            <input type="number" step="0.01" name="current_reading" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Rate per KWH</label>
-            <input type="number" step="0.01" name="rate_per_kwh" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Ate Gen Current Reading</label>
-            <input type="text" name="ate_gen" class="form-control" required>
-        </div>
-        <div class="mb-3">
-            <label>Ate Gen Previous Reading</label>
-            <input type="text" name="ate_gen" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Submit</button>
+    <h1>Billing Form</h1>
+    <form method="POST">
+        <label>Actual Bill:</label>
+        <input type="text" name="actual_bill" required><br>
+
+        <label>Previous Reading:</label>
+        <input type="text" name="previous_reading" required><br>
+
+        <label>Current Reading:</label>
+        <input type="text" name="current_reading" required><br>
+
+        <label>Ate Gen Previous Reading:</label>
+        <input type="text" name="ate_gen_previous" required>
+        <button type="button" onclick="copyAteGenPreviousReading()">Copy Previous Reading</button><br>
+
+        <label>Ate Gen Current Reading:</label>
+        <input type="text" name="ate_gen_current" required><br>
+
+        <input type="submit" value="Submit">
     </form>
 
-    <hr>
-    <h3>Billing Records</h3>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Actual Bill</th>
-                <th>Previous Reading</th>
-                <th>Current Reading</th>
-                <th>Consumption</th>
-                <th>Rate/kWh</th>
-                <th>Ate Gen Previous Reading</th>
-                <th>Ate Gen Current Reading</th>
-                <th>Ate Gen Consumption</th>
-                <th>Ate Gen Bill</th>
-                <th>JM Bill</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for record in records %}
-            <tr>
-                <td>{{ record[1] }}</td>
-                <td>{{ record[2] }}</td>
-                <td>{{ record[3] }}</td>
-                <td>{{ record[4] }}</td>
-                <td>{{ record[5] }}</td>
-                <td>{{ record[6] }}</td>
-                <td>{{ record[7] }}</td>
-                <td>{{ record[8] }}</td>
-                <td>{{ record[9] }}</td>
-                <td>{{ record[10] }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+    <h2>Billing Records</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Actual Bill</th>
+            <th>Previous Reading</th>
+            <th>Current Reading</th>
+            <th>Consumption</th>
+            <th>Rate per kWh</th>
+            <th>Ate Gen Previous</th>
+            <th>Ate Gen Current</th>
+            <th>Ate Gen Consumption</th>
+            <th>Ate Gen Share</th>
+            <th>JM Share</th>
+        </tr>
+        {% for record in records %}
+        <tr>
+            <td>{{ record['id'] }}</td>
+            <td>{{ record['actual_bill'] }}</td>
+            <td>{{ record['previous_reading'] }}</td>
+            <td>{{ record['current_reading'] }}</td>
+            <td>{{ record['consumption'] }}</td>
+            <td>{{ record['rate_per_kwh'] }}</td>
+            <td>{{ record['ate_gen_previous'] }}</td>
+            <td>{{ record['ate_gen_current'] }}</td>
+            <td>{{ record['ate_gen_consumption'] }}</td>
+            <td>{{ record['ate_gen_share'] }}</td>
+            <td>{{ record['jm_share'] }}</td>
+        </tr>
+        {% endfor %}
     </table>
-</div>
-</body>
-<button type="button" onclick="copyAteGenPreviousReading()">Copy Previous Reading</button>
 
-<script>
-function copyAteGenPreviousReading() {
-    const table = document.querySelector("table");
-    if (!table) return;
+    <script>
+    function copyAteGenPreviousReading() {
+        const table = document.querySelector("table");
+        if (!table) return;
 
-    const rows = table.querySelectorAll("tr");
-    if (rows.length < 2) return;
+        const rows = table.querySelectorAll("tr");
+        if (rows.length < 2) return;
 
-    const lastRow = rows[rows.length - 1];
-    const cells = lastRow.querySelectorAll("td");
+        const lastRow = rows[rows.length - 1];
+        const cells = lastRow.querySelectorAll("td");
 
-    // Assuming 'Ate Gen Current Reading' is at index 6
-    const ateGenCurrentReading = cells[6]?.innerText;
-    if (ateGenCurrentReading) {
-        document.querySelector("input[name='ate_gen_previous']").value = ateGenCurrentReading;
+        // Assuming 'Ate Gen Current Reading' is at index 7
+        const ateGenCurrentReading = cells[7]?.innerText;
+        if (ateGenCurrentReading) {
+            document.querySelector("input[name='ate_gen_previous']").value = ateGenCurrentReading;
+        }
     }
-}
-</script>
+    </script>
+</body>
 </html>

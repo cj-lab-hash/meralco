@@ -3,4 +3,4 @@ services:
     name: billing-app
     env: python
     buildCommand: ''
-    startCommand: rm -f database.db && python app.py
+    startCommand: python app.py
