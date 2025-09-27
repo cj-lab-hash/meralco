@@ -2,5 +2,5 @@ services:
   - type: web
     name: billing-app
     env: python
-    buildCommand: ""
-    startCommand: "python app.py"
+    buildCommand: ''
+    startCommand: python app.py

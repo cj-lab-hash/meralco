@@ -1,64 +1,63 @@
-from flask import Flask, render_template, request, redirect
+import os
 import sqlite3
+from flask import Flask, render_template, request, redirect
 
 app = Flask(__name__)
-DB_NAME = 'database.db'
 
-def init_db():
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("""CREATE TABLE IF NOT EXISTS billing (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        ate_gen TEXT,
-        previous_reading REAL,
-        current_reading REAL,
-        consumption REAL,
-        actual_bill REAL,
-        rate_per_kwh REAL
-    )""")
-    conn.commit()
-    conn.close()
+conn = sqlite3.connect('database.db')
+c = conn.cursor()
+c.execute("""
+CREATE TABLE IF NOT EXISTS billing (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ate_gen TEXT,
+    actual_bill REAL,
+    previous_reading REAL,
+    current_reading REAL,
+    consumption REAL,
+    rate_per_kwh REAL,
+    ate_gen_consumption REAL,
+    ate_gen_bill REAL,
+    jm_bill REAL
+)
+""")
+conn.commit()
+conn.close()
 
-@app.route("/", methods=["GET", "POST"])
+@app.route('/', methods=['GET', 'POST'])
 def index():
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-
-    if request.method == "POST":
-        ate_gen = request.form["ate_gen"]
-        previous_reading = float(request.form["previous_reading"])
-        current_reading = float(request.form["current_reading"])
-        actual_bill = float(request.form["actual_bill"])
-        rate_per_kwh = float(request.form["rate_per_kwh"])
+    if request.method == 'POST':
+        ate_gen = request.form['ate_gen']
+        actual_bill = float(request.form['actual_bill'])
+        previous_reading = float(request.form['previous_reading'])
+        current_reading = float(request.form['current_reading'])
         consumption = current_reading - previous_reading
+        rate_per_kwh = actual_bill / consumption if consumption != 0 else 0
+        ate_gen_consumption = current_reading - previous_reading
+        ate_gen_bill = ate_gen_consumption * rate_per_kwh
+        jm_bill = (consumption - ate_gen_consumption) * rate_per_kwh
 
-        c.execute("INSERT INTO billing (ate_gen, previous_reading, current_reading, consumption, actual_bill, rate_per_kwh) VALUES (?, ?, ?, ?, ?, ?)",
-                  (ate_gen, previous_reading, current_reading, consumption, actual_bill, rate_per_kwh))
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
+        c.execute("""
+        INSERT INTO billing (
+            ate_gen, actual_bill, previous_reading, current_reading,
+            consumption, rate_per_kwh, ate_gen_consumption, ate_gen_bill, jm_bill
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            ate_gen, actual_bill, previous_reading, current_reading,
+            consumption, rate_per_kwh, ate_gen_consumption, ate_gen_bill, jm_bill
+        ))
         conn.commit()
-        return redirect("/")
+        conn.close()
+        return redirect('/')
 
-    c.execute("SELECT * FROM billing")
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute('SELECT * FROM billing')
     records = c.fetchall()
     conn.close()
-    return render_template("index.html", records=records)
+    return render_template('index.html', records=records)
 
-@app.route("/move_reading", methods=["POST"])
-def move_reading():
-    conn = sqlite3.connect(DB_NAME)
-    c = conn.cursor()
-    c.execute("SELECT id, current_reading FROM billing WHERE ate_gen = 'Ate Gen' ORDER BY id DESC LIMIT 1")
-    result = c.fetchone()
-    if result:
-        record_id, current_reading = result
-        c.execute("UPDATE billing SET previous_reading = ? WHERE id = ?", (current_reading, record_id))
-        conn.commit()
-    conn.close()
-    return redirect("/")
-
-if __name__ == "__main__":
-    init_db()
-    
-import os
-port = int(os.environ.get("PORT", 5000))
-app.run(host="0.0.0.0", port=port)
-
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
